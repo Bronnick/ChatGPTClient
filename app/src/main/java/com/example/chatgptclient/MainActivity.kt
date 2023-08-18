@@ -16,6 +16,7 @@ import com.aallam.openai.api.chat.*
 import com.aallam.openai.api.http.Timeout
 import com.aallam.openai.api.model.ModelId
 import com.aallam.openai.client.OpenAI
+import com.example.chatgptclient.ui.composables.ChatBox
 import com.example.chatgptclient.ui.theme.ChatGPTClientTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -41,32 +42,6 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         val apiKey = "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"
 
-        val openAI = OpenAI(
-            token = apiKey,
-            timeout = Timeout(socket = 60.seconds),
-            // additional configurations...
-        )
-
-        val chatCompletionRequest = ChatCompletionRequest(
-            model = ModelId("gpt-3.5-turbo"),
-            messages = listOf(
-                ChatMessage(
-                    role = ChatRole.User,
-                    content = "Just type one word: \"Hello\""
-                )
-            )
-        )
-
-        scope.launch {
-            val completion: Flow<ChatCompletionChunk> = openAI.chatCompletions(chatCompletionRequest)
-            completion.collect {
-                try {
-                    Log.d("myLogs", it.choices.get(0).delta?.content!!)
-                } catch(e:Exception){
-
-                }
-            }
-        }
         /*val baseUrl = "https://api.openai.com/v1/chat/"
 
         scope.launch {
@@ -84,12 +59,8 @@ class MainActivity : ComponentActivity() {
         setContent {
             ChatGPTClientTheme {
                 // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colors.background
-                ) {
-                    Greeting("bonk")
-                }
+                    ChatBox()
+
             }
         }
     }
