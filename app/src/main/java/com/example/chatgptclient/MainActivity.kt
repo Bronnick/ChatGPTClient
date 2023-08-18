@@ -1,0 +1,109 @@
+package com.example.chatgptclient
+
+import android.os.Bundle
+import android.util.Log
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
+import androidx.compose.material.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
+import com.aallam.openai.api.BetaOpenAI
+import com.aallam.openai.api.chat.*
+import com.aallam.openai.api.http.Timeout
+import com.aallam.openai.api.model.ModelId
+import com.aallam.openai.client.OpenAI
+import com.example.chatgptclient.ui.theme.ChatGPTClientTheme
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.forEach
+import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.seconds
+
+/*interface ChatGPTService{
+
+    @GET("completions.json")
+    suspend fun getResponse(
+
+    ): Error
+}*/
+
+class MainActivity : ComponentActivity() {
+    val scope: CoroutineScope = CoroutineScope(Dispatchers.IO)
+
+    @OptIn(BetaOpenAI::class)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        val apiKey = "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"
+
+        val openAI = OpenAI(
+            token = apiKey,
+            timeout = Timeout(socket = 60.seconds),
+            // additional configurations...
+        )
+
+        val chatCompletionRequest = ChatCompletionRequest(
+            model = ModelId("gpt-3.5-turbo"),
+            messages = listOf(
+                ChatMessage(
+                    role = ChatRole.User,
+                    content = "Just type one word: \"Hello\""
+                )
+            )
+        )
+
+        scope.launch {
+            val completion: Flow<ChatCompletionChunk> = openAI.chatCompletions(chatCompletionRequest)
+            completion.collect {
+                try {
+                    Log.d("myLogs", it.choices.get(0).delta?.content!!)
+                } catch(e:Exception){
+
+                }
+            }
+        }
+        /*val baseUrl = "https://api.openai.com/v1/chat/"
+
+        scope.launch {
+            val retrofit = Retrofit.Builder()
+                .baseUrl(baseUrl)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build()
+
+            val retrofitService = retrofit.create<ChatGPTService>()
+            val response = retrofitService.getResponse()
+                .message
+            Log.d("myLogs", response.toString())
+        }*/
+
+        setContent {
+            ChatGPTClientTheme {
+                // A surface container using the 'background' color from the theme
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colors.background
+                ) {
+                    Greeting("bonk")
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun Greeting(name: String) {
+    Text(text = "Hello $name!")
+}
+
+@Preview(showBackground = true)
+@Composable
+fun DefaultPreview() {
+    ChatGPTClientTheme {
+        Greeting("Android")
+    }
+}
