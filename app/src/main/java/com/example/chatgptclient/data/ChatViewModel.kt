@@ -8,7 +8,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.aallam.openai.api.BetaOpenAI
-import com.example.chatgptclient.data.classes.BotResponseItem
+import com.example.chatgptclient.data.classes.ChatItem
 import com.example.chatgptclient.repository.BotMessageRepository
 import kotlinx.coroutines.launch
 
@@ -16,10 +16,10 @@ class ChatViewModel(
     private val botMessageRepository: BotMessageRepository
 ) : ViewModel() {
 
-    var botResponseHistory: ArrayList<BotResponseItem> = ArrayList()
+    var botResponseHistory: ArrayList<ChatItem> = ArrayList()
         private set
 
-    var responseIsBeingConstructed by mutableStateOf(false)
+    var isResponseBeingConstructed by mutableStateOf(false)
         private set
 
     var currentBotResponseText by mutableStateOf("")
@@ -31,7 +31,7 @@ class ChatViewModel(
     init{
         Log.d("myLogs", "viewmodel initializer block")
 
-        constructBotResponse("Who are you?")
+        //constructBotResponse("Who are you?")
 
     }
 
@@ -39,28 +39,35 @@ class ChatViewModel(
     fun constructBotResponse(
         query: String
     ) {
+        if(isResponseBeingConstructed) return
+
         viewModelScope.launch {
-            responseIsBeingConstructed = true
+            isResponseBeingConstructed = true
+            botResponseHistory.add(
+                ChatItem(
+                    text = query
+                )
+            )
             val source = botMessageRepository.getChatRecentMessage(query)
 
             try {
-                source.collect {
+                source.collect {chatCompletionChunk ->
                     currentBotResponseText +=
-                        it.choices.get(0).delta?.content.toString()
+                        chatCompletionChunk.choices.get(0).delta?.content ?: ""
 
-                    Log.d("myLogs", it.choices.get(0).delta?.content.toString())
+                    Log.d("myLogs", chatCompletionChunk.choices.get(0).delta?.content.toString())
                 }
             } catch (e: Exception) {
                 Log.d("myLogs", e.message ?: "")
             }
 
             botResponseHistory.add(
-                BotResponseItem(
+                ChatItem(
                     currentBotResponseText
                 )
             )
             currentBotResponseText = ""
-            responseIsBeingConstructed = false
+            isResponseBeingConstructed = false
         }
     }
 

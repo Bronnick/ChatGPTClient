@@ -1,7 +1,7 @@
 package com.example.chatgptclient.data.classes
 
 
-class BotResponseItem(
+data class ChatItem(
     val text: String,
 
 ) {
