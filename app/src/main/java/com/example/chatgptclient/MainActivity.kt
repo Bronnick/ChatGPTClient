@@ -40,7 +40,7 @@ class MainActivity : ComponentActivity() {
     @OptIn(BetaOpenAI::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val apiKey = "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"
+        val apiKey = "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"
 
         /*val baseUrl = "https://api.openai.com/v1/chat/"
 

@@ -15,7 +15,7 @@ val appContainer by lazy{
 }
 
 class AppContainer {
-    private val apiKey = "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"
+    private val apiKey = "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"
 
     private val openAI = OpenAI(
         token = apiKey,
