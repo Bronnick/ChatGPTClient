@@ -7,10 +7,13 @@ import com.aallam.openai.api.chat.ChatMessage
 import com.aallam.openai.api.chat.ChatRole
 import com.aallam.openai.api.model.ModelId
 import com.aallam.openai.client.OpenAI
+import com.example.chatgptclient.data.classes.ChatItem
+import com.example.chatgptclient.data.classes.ChatItemDao
 import kotlinx.coroutines.flow.Flow
 
 class BotMessageRepository @OptIn(BetaOpenAI::class) constructor(
-    private val openAI: OpenAI
+    private val openAI: OpenAI,
+    private val chatItemDao: ChatItemDao
 ) {
 
     @OptIn(BetaOpenAI::class)
@@ -26,5 +29,13 @@ class BotMessageRepository @OptIn(BetaOpenAI::class) constructor(
             )
         )
     )
+
+    fun getChatHistory(conversationName: String): List<ChatItem>{
+        return chatItemDao.getConversation(conversationName)
+    }
+
+    fun addChatItemToDatabase(chatItem: ChatItem){
+        chatItemDao.addChatItem(chatItem)
+    }
 
 }

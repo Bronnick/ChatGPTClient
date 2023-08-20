@@ -8,13 +8,26 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.aallam.openai.api.BetaOpenAI
+import com.example.chatgptclient.App
 import com.example.chatgptclient.data.classes.ChatItem
+import com.example.chatgptclient.data.classes.ChatItemDao
 import com.example.chatgptclient.repository.BotMessageRepository
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.time.LocalDateTime
+
+fun LocalDateTime.getHourAndMinute() =
+    this.toString().substringAfter("T").take(5)
 
 class ChatViewModel(
     private val botMessageRepository: BotMessageRepository
 ) : ViewModel() {
+
+    private val chatItemDao: ChatItemDao
+
+    var currentConversationName by mutableStateOf("")
+        private set
 
     var botResponseHistory: ArrayList<ChatItem> = ArrayList()
         private set
@@ -32,7 +45,8 @@ class ChatViewModel(
         Log.d("myLogs", "viewmodel initializer block")
 
         //constructBotResponse("Who are you?")
-
+        chatItemDao = App.appDatabase.getChatItemDao()
+        getChatHistory("default")
     }
 
     @OptIn(BetaOpenAI::class)
@@ -43,15 +57,25 @@ class ChatViewModel(
 
         viewModelScope.launch {
             isResponseBeingConstructed = true
-            botResponseHistory.add(
-                ChatItem(
-                    text = query
-                )
+
+            val chatUserItem = ChatItem(
+                id = 0,
+                text = query,
+                time = LocalDateTime.now().getHourAndMinute(),
+                role = "user",
+                conversationName = "default"
             )
+
+            botResponseHistory.add(chatUserItem)
+
+            withContext(Dispatchers.IO) {
+                botMessageRepository.addChatItemToDatabase(chatUserItem)
+            }
+
             val source = botMessageRepository.getChatRecentMessage(query)
 
             try {
-                source.collect {chatCompletionChunk ->
+                source.collect { chatCompletionChunk ->
                     currentBotResponseText +=
                         chatCompletionChunk.choices.get(0).delta?.content ?: ""
 
@@ -61,13 +85,36 @@ class ChatViewModel(
                 Log.d("myLogs", e.message ?: "")
             }
 
-            botResponseHistory.add(
-                ChatItem(
-                    currentBotResponseText
-                )
+            val chatBotItem = ChatItem(
+                id = 0,
+                text = currentBotResponseText,
+                time = LocalDateTime.now().getHourAndMinute(),
+                role = "chat",
+                conversationName = "default"
             )
+
+
+            botResponseHistory.add(chatBotItem)
+
+            withContext(Dispatchers.IO) {
+                botMessageRepository.addChatItemToDatabase(chatBotItem)
+            }
+
             currentBotResponseText = ""
             isResponseBeingConstructed = false
+        }
+    }
+
+    fun getChatHistory(conversationName: String){
+        currentConversationName = conversationName
+        botResponseHistory.clear()
+
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                for (item in botMessageRepository.getChatHistory(conversationName)) {
+                    botResponseHistory.add(item)
+                }
+            }
         }
     }
 

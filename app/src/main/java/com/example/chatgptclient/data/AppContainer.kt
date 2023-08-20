@@ -1,12 +1,8 @@
 package com.example.chatgptclient.data
 
-import com.aallam.openai.api.BetaOpenAI
-import com.aallam.openai.api.chat.ChatCompletionRequest
-import com.aallam.openai.api.chat.ChatMessage
-import com.aallam.openai.api.chat.ChatRole
 import com.aallam.openai.api.http.Timeout
-import com.aallam.openai.api.model.ModelId
 import com.aallam.openai.client.OpenAI
+import com.example.chatgptclient.App
 import com.example.chatgptclient.repository.BotMessageRepository
 import kotlin.time.Duration.Companion.seconds
 
@@ -23,6 +19,9 @@ class AppContainer {
     )
 
     val botMessageRepository by lazy{
-        BotMessageRepository(openAI)
+        BotMessageRepository(
+            openAI = openAI,
+            chatItemDao = App.appDatabase.getChatItemDao()
+        )
     }
 }
