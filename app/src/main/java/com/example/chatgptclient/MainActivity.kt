@@ -17,6 +17,7 @@ import com.aallam.openai.api.http.Timeout
 import com.aallam.openai.api.model.ModelId
 import com.aallam.openai.client.OpenAI
 import com.example.chatgptclient.ui.composables.ChatBox
+import com.example.chatgptclient.ui.composables.MainScreen
 import com.example.chatgptclient.ui.theme.ChatGPTClientTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -59,7 +60,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             ChatGPTClientTheme {
                 // A surface container using the 'background' color from the theme
-                    ChatBox()
+                    MainScreen()
 
             }
         }

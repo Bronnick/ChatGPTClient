@@ -29,7 +29,13 @@ class ChatViewModel(
     var currentConversationName by mutableStateOf("")
         private set
 
+    var isConversationSelectorVisible by mutableStateOf(true)
+        private set
+
     var botResponseHistory: ArrayList<ChatItem> = ArrayList()
+        private set
+
+    var conversationNames = ArrayList<String>()
         private set
 
     var isResponseBeingConstructed by mutableStateOf(false)
@@ -47,6 +53,7 @@ class ChatViewModel(
         //constructBotResponse("Who are you?")
         chatItemDao = App.appDatabase.getChatItemDao()
         getChatHistory("default")
+        getConversationNames()
     }
 
     @OptIn(BetaOpenAI::class)
@@ -118,8 +125,22 @@ class ChatViewModel(
         }
     }
 
+    fun getConversationNames() {
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                for (item in botMessageRepository.getConversationNames()) {
+                    conversationNames.add(item)
+                }
+            }
+        }
+    }
+
     fun setUserText(text: String){
         currentUserText = text
+    }
+
+    fun setConversationSelectorVisibility(value: Boolean){
+        isConversationSelectorVisible = value
     }
 
     companion object {

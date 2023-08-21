@@ -1,29 +1,58 @@
 package com.example.chatgptclient.ui.composables
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
+import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.chatgptclient.data.ChatViewModel
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.seconds
 
 @Composable
 fun MainScreen(
-    text: String
+
 ) {
+    val scaffoldState = rememberScaffoldState()
     val scope = rememberCoroutineScope()
 
+    val chatViewModel: ChatViewModel =
+        viewModel(factory = ChatViewModel.Factory)
 
-    var textValue by remember{ mutableStateOf("") }
-    var response by remember {
-        mutableStateOf("")
+    Scaffold(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(color = Color.White),
+
+        scaffoldState = scaffoldState,
+
+        drawerContent = {
+            ConversationSelector(
+                conversationNames = chatViewModel.conversationNames,
+
+            )
+        },
+
+        topBar = {
+            ChatBoxTopBar (
+                onClickMenuButton = {
+                    scope.launch {
+                        scaffoldState.drawerState.open()
+                    }
+                }
+            )
+        }
+    ) {
+        ChatBox(
+            modifier = Modifier.padding(it),
+            viewModel = chatViewModel
+        )
     }
-    TextField(
-        value = textValue,
-        onValueChange = {textValue = it}
-    )
-
-    Text(
-        text = text
-    )
 }

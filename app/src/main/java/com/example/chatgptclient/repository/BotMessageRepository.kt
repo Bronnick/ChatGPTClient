@@ -34,6 +34,10 @@ class BotMessageRepository @OptIn(BetaOpenAI::class) constructor(
         return chatItemDao.getConversation(conversationName)
     }
 
+    fun getConversationNames(): List<String>{
+        return chatItemDao.getConversationNames()
+    }
+
     fun addChatItemToDatabase(chatItem: ChatItem){
         chatItemDao.addChatItem(chatItem)
     }
