@@ -26,10 +26,13 @@ class ChatViewModel(
 
     private val chatItemDao: ChatItemDao
 
-    var currentConversationName by mutableStateOf("")
+    var currentConversationName by mutableStateOf("default")
         private set
 
     var isConversationSelectorVisible by mutableStateOf(true)
+        private set
+
+    var isConversationCreationDialogVisible by mutableStateOf(false)
         private set
 
     var botResponseHistory: ArrayList<ChatItem> = ArrayList()
@@ -70,13 +73,15 @@ class ChatViewModel(
                 text = query,
                 time = LocalDateTime.now().getHourAndMinute(),
                 role = "user",
-                conversationName = "default"
+                conversationName = currentConversationName
             )
 
-            botResponseHistory.add(chatUserItem)
+            if(chatUserItem.text.isNotEmpty()) {
+                botResponseHistory.add(chatUserItem)
 
-            withContext(Dispatchers.IO) {
-                botMessageRepository.addChatItemToDatabase(chatUserItem)
+                withContext(Dispatchers.IO) {
+                    botMessageRepository.addChatItemToDatabase(chatUserItem)
+                }
             }
 
             val source = botMessageRepository.getChatRecentMessage(query)
@@ -97,14 +102,15 @@ class ChatViewModel(
                 text = currentBotResponseText,
                 time = LocalDateTime.now().getHourAndMinute(),
                 role = "chat",
-                conversationName = "default"
+                conversationName = currentConversationName
             )
 
+            if(chatBotItem.text.isNotEmpty()) {
+                botResponseHistory.add(chatBotItem)
 
-            botResponseHistory.add(chatBotItem)
-
-            withContext(Dispatchers.IO) {
-                botMessageRepository.addChatItemToDatabase(chatBotItem)
+                withContext(Dispatchers.IO) {
+                    botMessageRepository.addChatItemToDatabase(chatBotItem)
+                }
             }
 
             currentBotResponseText = ""
@@ -112,22 +118,49 @@ class ChatViewModel(
         }
     }
 
+    fun addConversation(conversationName: String){
+        conversationNames.add(conversationName)
+        conversationNames = conversationNames
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                botMessageRepository.addConversationToDatabase(conversationName)
+            }
+            getChatHistory(conversationName)
+        }
+
+        /*viewModelScope.launch {
+            insertConversationJob.join()
+            getChatHistory(conversationName)
+        }*/
+    }
+
     fun getChatHistory(conversationName: String){
         currentConversationName = conversationName
         botResponseHistory.clear()
+        Log.d("myLogs", "getting chat history")
 
         viewModelScope.launch {
+            Log.d("myLogs", "launched coroutine getting history")
             withContext(Dispatchers.IO) {
                 for (item in botMessageRepository.getChatHistory(conversationName)) {
-                    botResponseHistory.add(item)
+                    if(item.text.isNotEmpty()) {
+                        botResponseHistory.add(item)
+                    }
                 }
+
+                    Log.d("myLogs", "ended getting history")
             }
+            for(item in botResponseHistory)
+                Log.d("myLogs", item.toString())
+            currentUserText = "s"
+            currentUserText=""
         }
     }
 
     fun getConversationNames() {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
+                conversationNames.clear()
                 for (item in botMessageRepository.getConversationNames()) {
                     conversationNames.add(item)
                 }
@@ -141,6 +174,10 @@ class ChatViewModel(
 
     fun setConversationSelectorVisibility(value: Boolean){
         isConversationSelectorVisible = value
+    }
+
+    fun setConversationCreationDialogVisibility(value: Boolean){
+        isConversationCreationDialogVisible = value
     }
 
     companion object {

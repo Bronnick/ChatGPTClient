@@ -19,6 +19,7 @@ interface ChatItemDao{
 
     @Insert
     fun addChatItem(chatItem: ChatItem)
+
 }
 
 @Entity

@@ -116,4 +116,16 @@ fun ChatBox(
 
     }
 
+    if(viewModel.isConversationCreationDialogVisible){
+        ConversationCreationDialog(
+            onDismissRequest = {
+                viewModel.setConversationCreationDialogVisibility(false)
+            },
+            onCreateButtonClick = {conversationName ->
+                viewModel.addConversation(conversationName)
+                viewModel.setConversationCreationDialogVisibility(false)
+            }
+        )
+    }
+
 }
