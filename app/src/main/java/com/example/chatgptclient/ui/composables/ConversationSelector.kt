@@ -3,6 +3,7 @@ package com.example.chatgptclient.ui.composables
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.Button
 import androidx.compose.material.Text
@@ -16,13 +17,14 @@ fun ConversationSelector(
 ) {
     Column(
         modifier = Modifier
-            .fillMaxWidth(0.8f)
-            .fillMaxHeight()
-            .background(color = Color.Magenta)
+            .fillMaxSize()
+            .background(color = Color.LightGray)
     ) {
 
         for (item in conversationNames) {
-            Text(text = item)
+            ConversationDrawerItem(
+                conversationName = item
+            )
         }
     }
 }

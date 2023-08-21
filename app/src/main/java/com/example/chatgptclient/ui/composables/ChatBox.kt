@@ -78,8 +78,9 @@ fun ChatBox(
             }
 
             Row(
-                /*modifier = Modifier.
-            weight(0.2f, true),*/
+                modifier = Modifier
+                    .background(color = Color.Black),
+
                 verticalAlignment = Alignment.Bottom
             ) {
                 ProvideTextStyle(
