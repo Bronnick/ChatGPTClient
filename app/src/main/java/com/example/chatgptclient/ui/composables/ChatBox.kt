@@ -55,9 +55,25 @@ fun ChatBox(
                     TextStyle(color = Color.Black)
                 ) {
                     for (item in botResponseHistory) {
-                        Box(
+                        Column(
 
                         ) {
+
+                            if(item.role == "user") {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .heightIn(min = 30.dp),
+                                    contentAlignment = Alignment.BottomEnd
+                                ) {
+                                    Text(
+                                        text = item.time,
+                                        textAlign = TextAlign.End,
+                                        fontSize = 11.sp
+                                    )
+                                }
+                            }
+
                             Text(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -83,18 +99,6 @@ fun ChatBox(
                                     ),
                                 text = item.text
                             )
-
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxSize(),
-                                contentAlignment = Alignment.BottomEnd
-                            ) {
-                                Text(
-                                    text = item.time,
-                                    textAlign = TextAlign.End,
-                                    fontSize = 11.sp
-                                )
-                            }
                         }
                     }
 

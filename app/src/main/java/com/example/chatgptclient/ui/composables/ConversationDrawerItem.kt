@@ -2,7 +2,9 @@ package com.example.chatgptclient.ui.composables
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.ProvideTextStyle
 import androidx.compose.material.Text
@@ -27,9 +29,9 @@ fun ConversationDrawerItem(
         Text(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(all = 4.dp)
+                .height(50.dp)
                 .background(
-                    color = if(currentConversationName == conversationName){
+                    color = if (currentConversationName == conversationName) {
                         Color.Cyan
                     } else Color.White
                 )
@@ -42,10 +44,12 @@ fun ConversationDrawerItem(
                         strokeWidth = borderSize.toPx()
                     )
                 }
+                .padding(4.dp)
                 .clickable {
                     onConversationChange(conversationName)
                 },
             text = conversationName
         )
+
     }
 }
