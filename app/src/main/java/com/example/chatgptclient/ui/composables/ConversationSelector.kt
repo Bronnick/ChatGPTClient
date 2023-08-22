@@ -21,7 +21,8 @@ import androidx.compose.ui.unit.dp
 fun ConversationSelector(
     conversationNames: List<String>,
     currentConversationName: String,
-    onFloatingActionButtonClick: () -> Unit
+    onFloatingActionButtonClick: () -> Unit,
+    onConversationChange: (String) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -33,7 +34,8 @@ fun ConversationSelector(
         for (item in conversationNames) {
             ConversationDrawerItem(
                 conversationName = item,
-                currentConversationName = currentConversationName
+                currentConversationName = currentConversationName,
+                onConversationChange = onConversationChange
             )
         }
 

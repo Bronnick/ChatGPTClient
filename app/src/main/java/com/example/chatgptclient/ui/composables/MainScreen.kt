@@ -38,6 +38,12 @@ fun MainScreen(
                 currentConversationName = chatViewModel.currentConversationName,
                 onFloatingActionButtonClick = {
                     chatViewModel.setConversationCreationDialogVisibility(true)
+                },
+                onConversationChange = {conversationName ->
+                    chatViewModel.getChatHistory(conversationName)
+                    scope.launch {
+                        scaffoldState.drawerState.close()
+                    }
                 }
             )
         },
