@@ -16,8 +16,12 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.chatgptclient.data.ChatViewModel
+import com.example.chatgptclient.ui.theme.LightGreen
+import com.example.chatgptclient.ui.theme.LightYellow
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -51,21 +55,47 @@ fun ChatBox(
                     TextStyle(color = Color.Black)
                 ) {
                     for (item in botResponseHistory) {
-                        Text(
-                            modifier = Modifier
-                                .padding(all = 4.dp)
-                                .fillMaxWidth()
-                                .drawBehind {
-                                    val borderSize = 1.dp
-                                    drawLine(
-                                        color = Color.Black,
-                                        start = Offset(0f, size.height),
-                                        end = Offset(size.width, size.height),
-                                        strokeWidth = borderSize.toPx()
+                        Box(
+
+                        ) {
+                            Text(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .background(
+                                        color =
+                                        if (item.role == "user") LightGreen
+                                        else LightYellow
                                     )
-                                },
-                            text = item.text
-                        )
+                                    .drawBehind {
+                                        val borderSize = 1.dp
+                                        drawLine(
+                                            color = Color.Black,
+                                            start = Offset(0f, size.height),
+                                            end = Offset(size.width, size.height),
+                                            strokeWidth = borderSize.toPx()
+                                        )
+                                    }
+                                    .padding(
+                                        bottom = 8.dp,
+                                        top = 8.dp,
+                                        start = 4.dp,
+                                        end = 4.dp
+                                    ),
+                                text = item.text
+                            )
+
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize(),
+                                contentAlignment = Alignment.BottomEnd
+                            ) {
+                                Text(
+                                    text = item.time,
+                                    textAlign = TextAlign.End,
+                                    fontSize = 11.sp
+                                )
+                            }
+                        }
                     }
 
                     Text(
