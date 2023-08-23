@@ -1,6 +1,7 @@
 package com.example.chatgptclient.data
 
 import android.util.Log
+import androidx.compose.material.SnackbarHostState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModel
@@ -49,6 +50,8 @@ class ChatViewModel(
 
     var currentUserText by mutableStateOf("")
         private set
+
+    var snackbarHostState by mutableStateOf(SnackbarHostState())
 
     init{
         Log.d("myLogs", "viewmodel initializer block")

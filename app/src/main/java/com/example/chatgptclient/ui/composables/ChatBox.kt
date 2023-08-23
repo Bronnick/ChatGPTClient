@@ -100,7 +100,7 @@ fun ChatBox(
                             )
                         }
                     }
-
+                    
                     Text(
                         modifier = Modifier
                             .padding(all = 4.dp)
@@ -110,6 +110,14 @@ fun ChatBox(
                 }
             }
 
+            ProvideTextStyle(
+                TextStyle(color = Color.White)
+            ) {
+                SnackbarHost(
+                    hostState = viewModel.snackbarHostState
+                )
+            }
+            
             Row(
                 modifier = Modifier
                     .background(color = Color.Black),

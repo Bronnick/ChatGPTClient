@@ -72,6 +72,13 @@ fun MainScreen(
                 if(chatViewModel.currentUserText.isNotEmpty()) {
                     chatViewModel.constructBotResponse(value)
                     keyboardController?.hide()
+                } else{
+                    scope.launch {
+                        scaffoldState.snackbarHostState.showSnackbar(
+                            message = "Your request is empty.",
+                            duration = SnackbarDuration.Short
+                        )
+                    }
                 }
 
                 chatViewModel.setUserText("")
