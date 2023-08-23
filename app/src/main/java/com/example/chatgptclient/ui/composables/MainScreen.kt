@@ -8,13 +8,16 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.*
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.chatgptclient.data.ChatViewModel
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.seconds
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun MainScreen(
 
@@ -24,6 +27,8 @@ fun MainScreen(
 
     val chatViewModel: ChatViewModel =
         viewModel(factory = ChatViewModel.Factory)
+
+    val keyboardController = LocalSoftwareKeyboardController.current
 
     Scaffold(
         modifier = Modifier
@@ -61,7 +66,16 @@ fun MainScreen(
     ) {
         ChatBox(
             modifier = Modifier.padding(it),
-            viewModel = chatViewModel
+            viewModel = chatViewModel,
+            onClickSendRequestButton = { value ->
+
+                if(chatViewModel.currentUserText.isNotEmpty()) {
+                    chatViewModel.constructBotResponse(value)
+                    keyboardController?.hide()
+                }
+
+                chatViewModel.setUserText("")
+            }
         )
     }
 }

@@ -27,14 +27,13 @@ import com.example.chatgptclient.ui.theme.LightYellow
 @Composable
 fun ChatBox(
     modifier: Modifier,
-    viewModel: ChatViewModel
+    viewModel: ChatViewModel,
+    onClickSendRequestButton: (String) -> Unit
 ) {
 
     val userText = viewModel.currentUserText
     val botResponseHistory = viewModel.botResponseHistory
     val chatResponse = viewModel.currentBotResponseText
-
-    val keyboardController = LocalSoftwareKeyboardController.current
 
 
     Box(
@@ -134,9 +133,14 @@ fun ChatBox(
                 }
                 IconButton(
                     onClick = {
-                        viewModel.constructBotResponse(userText)
-                        viewModel.setUserText("")
-                        keyboardController?.hide()
+                        onClickSendRequestButton(viewModel.currentUserText)
+                        /*viewModel.constructBotResponse(userText)
+
+                        if(viewModel.currentUserText.isNotEmpty())
+                            keyboardController?.hide()
+
+                        viewModel.setUserText("")*/
+
                     }
                 ) {
                     Icon(
