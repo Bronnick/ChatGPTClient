@@ -8,6 +8,7 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -35,6 +36,17 @@ fun ChatBox(
     val botResponseHistory = viewModel.botResponseHistory
     val chatResponse = viewModel.currentBotResponseText
 
+    val scrollState = rememberScrollState()
+
+    val scrollPercentage = ((scrollState.value / scrollState.maxValue) * 100).toFloat()
+
+    LaunchedEffect(Unit){
+        scrollState.animateScrollTo(
+            if(scrollPercentage < 0.98){
+                scrollState.maxValue
+            } else scrollState.value
+        )
+    }
 
     Box(
         modifier = Modifier
@@ -47,7 +59,7 @@ fun ChatBox(
                 modifier = Modifier
                     .padding(all = 4.dp)
                     .weight(0.5f, true)
-                    .verticalScroll(rememberScrollState()),
+                    .verticalScroll(scrollState),
                 verticalArrangement = Arrangement.Bottom
             ) {
                 ProvideTextStyle(
@@ -100,13 +112,16 @@ fun ChatBox(
                             )
                         }
                     }
-                    
-                    Text(
-                        modifier = Modifier
-                            .padding(all = 4.dp)
-                            .fillMaxWidth(),
-                        text = chatResponse,
-                    )
+
+                    if(viewModel.currentConversationName ==
+                            viewModel.responseWrittenToConversation) {
+                        Text(
+                            modifier = Modifier
+                                .padding(all = 4.dp)
+                                .fillMaxWidth(),
+                            text = chatResponse,
+                        )
+                    }
                 }
             }
 

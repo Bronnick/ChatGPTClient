@@ -30,6 +30,9 @@ class ChatViewModel(
     var currentConversationName by mutableStateOf("default")
         private set
 
+    var responseWrittenToConversation = currentConversationName
+        private set
+
     var isConversationSelectorVisible by mutableStateOf(true)
         private set
 
@@ -53,6 +56,9 @@ class ChatViewModel(
 
     var snackbarHostState by mutableStateOf(SnackbarHostState())
 
+    var scrollState by mutableStateOf(0)
+        private set
+
     init{
         Log.d("myLogs", "viewmodel initializer block")
 
@@ -71,12 +77,14 @@ class ChatViewModel(
         viewModelScope.launch {
             isResponseBeingConstructed = true
 
+            responseWrittenToConversation = currentConversationName
+
             val chatUserItem = ChatItem(
                 id = 0,
                 text = query,
                 time = LocalDateTime.now().getHourAndMinute(),
                 role = "user",
-                conversationName = currentConversationName
+                conversationName = responseWrittenToConversation
             )
 
             if(chatUserItem.text.isNotEmpty()) {
@@ -94,7 +102,7 @@ class ChatViewModel(
                     currentBotResponseText +=
                         chatCompletionChunk.choices.get(0).delta?.content ?: ""
 
-                    Log.d("myLogs", chatCompletionChunk.choices.get(0).delta?.content.toString())
+                 //   Log.d("myLogs", chatCompletionChunk.choices.get(0).delta?.content.toString())
                 }
             } catch (e: Exception) {
                 Log.d("myLogs", e.message ?: "")
@@ -105,7 +113,7 @@ class ChatViewModel(
                 text = currentBotResponseText,
                 time = LocalDateTime.now().getHourAndMinute(),
                 role = "chat",
-                conversationName = currentConversationName
+                conversationName = responseWrittenToConversation
             )
 
             if(chatBotItem.text.isNotEmpty()) {
