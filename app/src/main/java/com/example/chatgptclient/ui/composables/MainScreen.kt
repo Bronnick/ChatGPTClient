@@ -94,15 +94,16 @@ fun MainScreen(
         },
 
         topBar = {
-            if(currentDestination?.route == "home")
-            ChatBoxTopBar (
-                currentConversationName = chatViewModel.currentConversationName,
-                onClickMenuButton = {
-                    scope.launch {
-                        scaffoldState.drawerState.open()
+            if(currentDestination?.route == "home") {
+                ChatBoxTopBar(
+                    currentConversationName = chatViewModel.currentConversationName,
+                    onClickMenuButton = {
+                        scope.launch {
+                            scaffoldState.drawerState.open()
+                        }
                     }
-                }
-            )
+                )
+            }
         },
 
         bottomBar = {
