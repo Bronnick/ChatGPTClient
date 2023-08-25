@@ -59,6 +59,9 @@ fun MainScreen(
 
 ) {
     val navController = rememberNavController()
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentDestination = navBackStackEntry?.destination
+
     val scaffoldState = rememberScaffoldState()
     val scope = rememberCoroutineScope()
 
@@ -91,6 +94,7 @@ fun MainScreen(
         },
 
         topBar = {
+            if(currentDestination?.route == "home")
             ChatBoxTopBar (
                 currentConversationName = chatViewModel.currentConversationName,
                 onClickMenuButton = {
@@ -103,8 +107,6 @@ fun MainScreen(
 
         bottomBar = {
             BottomNavigation {
-                val navBackStackEntry by navController.currentBackStackEntryAsState()
-                val currentDestination = navBackStackEntry?.destination
 
                 items.forEach{screen ->
                     BottomNavigationItem(

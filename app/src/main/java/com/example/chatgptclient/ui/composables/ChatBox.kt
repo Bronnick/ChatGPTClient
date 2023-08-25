@@ -38,13 +38,9 @@ fun ChatBox(
 
     val scrollState = rememberScrollState()
 
-    val scrollPercentage = ((scrollState.value / scrollState.maxValue) * 100).toFloat()
-
     LaunchedEffect(Unit){
         scrollState.animateScrollTo(
-            if(scrollPercentage < 0.98){
-                scrollState.maxValue
-            } else scrollState.value
+            scrollState.maxValue
         )
     }
 
