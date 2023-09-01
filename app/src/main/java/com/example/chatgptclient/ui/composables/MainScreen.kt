@@ -156,7 +156,7 @@ fun MainScreen(
                 )
             }
             composable(Screen.Settings.route){
-                SettingsScreen()
+                SettingsScreen(chatViewModel)
             }
         }
     }

@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.compose.material.SnackbarHostState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.*
+import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
@@ -13,6 +14,8 @@ import com.example.chatgptclient.App
 import com.example.chatgptclient.data.classes.ChatItem
 import com.example.chatgptclient.data.classes.ChatItemDao
 import com.example.chatgptclient.repository.BotMessageRepository
+import com.example.chatgptclient.ui.theme.LightGreen
+import com.example.chatgptclient.ui.theme.LightYellow
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -33,9 +36,6 @@ class ChatViewModel(
     var responseWrittenToConversation = currentConversationName
         private set
 
-    var isConversationSelectorVisible by mutableStateOf(true)
-        private set
-
     var isConversationCreationDialogVisible by mutableStateOf(false)
         private set
 
@@ -54,10 +54,13 @@ class ChatViewModel(
     var currentUserText by mutableStateOf("")
         private set
 
-    var snackbarHostState by mutableStateOf(SnackbarHostState())
-
-    var scrollState by mutableStateOf(0)
+    var currentUserMessageColor by mutableStateOf(LightYellow)
         private set
+
+    var currentBotMessageColor by mutableStateOf(LightGreen)
+        private set
+
+    var snackbarHostState by mutableStateOf(SnackbarHostState())
 
     init{
         Log.d("myLogs", "viewmodel initializer block")
@@ -183,12 +186,16 @@ class ChatViewModel(
         currentUserText = text
     }
 
-    fun setConversationSelectorVisibility(value: Boolean){
-        isConversationSelectorVisible = value
-    }
-
     fun setConversationCreationDialogVisibility(value: Boolean){
         isConversationCreationDialogVisible = value
+    }
+
+    fun setUserMessageColor(value: Color){
+        currentUserMessageColor = value
+    }
+
+    fun setBotMessageColor(value: Color){
+        currentBotMessageColor = value
     }
 
     companion object {
