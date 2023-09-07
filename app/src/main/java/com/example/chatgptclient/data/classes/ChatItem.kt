@@ -17,6 +17,12 @@ interface ChatItemDao{
     @Query("SELECT conversation_name FROM chatitem GROUP BY conversation_name")
     fun getConversationNames(): List<String>
 
+
+    @Query("SELECT EXISTS(" +
+            "SELECT id FROM chatitem WHERE conversation_name=:conversationName)"
+    )
+    fun checkConversationPresence(conversationName: String): Boolean
+
     @Insert
     fun addChatItem(chatItem: ChatItem)
 

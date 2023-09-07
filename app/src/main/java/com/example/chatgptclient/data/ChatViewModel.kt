@@ -30,7 +30,7 @@ class ChatViewModel(
 
     private val chatItemDao: ChatItemDao
 
-    var currentConversationName by mutableStateOf("default")
+    var currentConversationName by mutableStateOf("")
         private set
 
     var responseWrittenToConversation = currentConversationName
@@ -62,14 +62,27 @@ class ChatViewModel(
 
     var snackbarHostState by mutableStateOf(SnackbarHostState())
 
-    init{
+    init {
         Log.d("myLogs", "viewmodel initializer block")
 
         //constructBotResponse("Who are you?")
         chatItemDao = App.appDatabase.getChatItemDao()
-        getChatHistory("default")
-        getConversationNames()
+
+
+        /*withContext(Dispatchers.IO) {
+                if (!isConversationPresent("default")) {
+                    addConversation("default")
+                }
+            }*/
+        viewModelScope.launch {
+            val addJob = launch { addConversation("default") }
+            addJob.join()
+            val getConversationJob = launch { getConversationNames() }
+            getConversationJob.join()
+            getChatHistory("default")
+        }
     }
+
 
     @OptIn(BetaOpenAI::class)
     fun constructBotResponse(
@@ -133,6 +146,9 @@ class ChatViewModel(
     }
 
     fun addConversation(conversationName: String){
+        if(conversationNames.contains(conversationName))
+            return
+
         conversationNames.add(conversationName)
         conversationNames = conversationNames
         viewModelScope.launch {
@@ -168,7 +184,9 @@ class ChatViewModel(
                 Log.d("myLogs", item.toString())
             currentUserText = "s"
             currentUserText=""
+            currentConversationName = conversationName
         }
+
     }
 
     fun getConversationNames() {
@@ -178,6 +196,9 @@ class ChatViewModel(
                 for (item in botMessageRepository.getConversationNames()) {
                     conversationNames.add(item)
                 }
+            }
+            if(!conversationNames.contains("default")){
+                //conversationNames.add("default")
             }
         }
     }

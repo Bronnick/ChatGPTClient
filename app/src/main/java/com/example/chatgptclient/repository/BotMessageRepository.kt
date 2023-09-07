@@ -11,7 +11,7 @@ import com.example.chatgptclient.data.classes.ChatItem
 import com.example.chatgptclient.data.classes.ChatItemDao
 import kotlinx.coroutines.flow.Flow
 
-class BotMessageRepository @OptIn(BetaOpenAI::class) constructor(
+class BotMessageRepository (
     private val openAI: OpenAI,
     private val chatItemDao: ChatItemDao
 ) {
