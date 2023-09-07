@@ -90,10 +90,9 @@ class ChatViewModel(
     ) {
         if(isResponseBeingConstructed) return
 
+        responseWrittenToConversation = currentConversationName
         viewModelScope.launch {
             isResponseBeingConstructed = true
-
-            responseWrittenToConversation = currentConversationName
 
             val chatUserItem = ChatItem(
                 id = 0,

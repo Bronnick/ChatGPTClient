@@ -69,7 +69,6 @@ fun ChatBox(
                         Column(
 
                         ) {
-
                             if(item.role == "user") {
                                 Box(
                                     modifier = Modifier
@@ -85,32 +84,36 @@ fun ChatBox(
                                 }
                             }
 
-                            Text(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .background(
-                                        color =
-                                        if (item.role == "user") viewModel.currentUserMessageColor
-                                        else viewModel.currentBotMessageColor
-                                    )
-                                    .drawBehind {
-                                        val borderSize = 1.dp
-                                        drawLine(
-                                            color = Color.Black,
-                                            start = Offset(0f, size.height),
-                                            end = Offset(size.width, size.height),
-                                            strokeWidth = borderSize.toPx(),
-                                            pathEffect = PathEffect.cornerPathEffect(5.0f)
+                            if(item.conversationName ==
+                                    viewModel.currentConversationName
+                            ) {
+                                Text(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .background(
+                                            color =
+                                            if (item.role == "user") viewModel.currentUserMessageColor
+                                            else viewModel.currentBotMessageColor
                                         )
-                                    }
-                                    .padding(
-                                        bottom = 8.dp,
-                                        top = 8.dp,
-                                        start = 4.dp,
-                                        end = 4.dp
-                                    ),
-                                text = item.text
-                            )
+                                        .drawBehind {
+                                            val borderSize = 1.dp
+                                            drawLine(
+                                                color = Color.Black,
+                                                start = Offset(0f, size.height),
+                                                end = Offset(size.width, size.height),
+                                                strokeWidth = borderSize.toPx(),
+                                                pathEffect = PathEffect.cornerPathEffect(5.0f)
+                                            )
+                                        }
+                                        .padding(
+                                            bottom = 8.dp,
+                                            top = 8.dp,
+                                            start = 4.dp,
+                                            end = 4.dp
+                                        ),
+                                    text = item.text
+                                )
+                            }
                         }
                     }
 
