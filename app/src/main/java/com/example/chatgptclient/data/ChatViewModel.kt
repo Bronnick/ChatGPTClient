@@ -20,6 +20,14 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.time.LocalDateTime
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.edit
+import com.example.chatgptclient.App.Companion.settings
+import com.example.chatgptclient.currentBotColorParam
+import com.example.chatgptclient.currentUserColorParam
+import com.example.chatgptclient.ui.composables.colors
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 
 fun LocalDateTime.getHourAndMinute() =
     this.toString().substringAfter("T").take(5)
@@ -69,17 +77,31 @@ class ChatViewModel(
         chatItemDao = App.appDatabase.getChatItemDao()
 
 
-        /*withContext(Dispatchers.IO) {
-                if (!isConversationPresent("default")) {
-                    addConversation("default")
-                }
-            }*/
+
         viewModelScope.launch {
             val addJob = launch { addConversation("default") }
             addJob.join()
             val getConversationJob = launch { getConversationNames() }
             getConversationJob.join()
             getChatHistory("default")
+        }
+
+        viewModelScope.launch {
+            currentUserMessageColor = colors.get(
+                settings.data
+                    .map {preferences ->
+                        preferences[currentUserColorParam] ?: 0
+                    }
+                    .first {value -> value > 0}
+            ).second
+
+            currentBotMessageColor = colors.get(
+                settings.data
+                    .map {preferences ->
+                        preferences[currentBotColorParam] ?: -1
+                    }
+                    .first {value -> value > -1}
+            ).second
         }
     }
 
@@ -179,8 +201,7 @@ class ChatViewModel(
 
                     Log.d("myLogs", "ended getting history")
             }
-            for(item in botResponseHistory)
-                Log.d("myLogs", item.toString())
+
             currentUserText = "s"
             currentUserText=""
             currentConversationName = conversationName
@@ -210,12 +231,32 @@ class ChatViewModel(
         isConversationCreationDialogVisible = value
     }
 
-    fun setUserMessageColor(value: Color){
-        currentUserMessageColor = value
+    fun setUserMessageColor(colorIndex: Int){
+        currentUserMessageColor = colors.get(colorIndex).second
+        updateSettings(
+            preferenceKey = currentUserColorParam,
+            value = colorIndex
+        )
     }
 
-    fun setBotMessageColor(value: Color){
-        currentBotMessageColor = value
+    fun setBotMessageColor(colorIndex: Int){
+        currentBotMessageColor = colors.get(colorIndex).second
+        updateSettings(
+            preferenceKey = currentBotColorParam,
+            value = colorIndex
+        )
+    }
+
+    fun updateSettings(
+        preferenceKey: Preferences.Key<Int>,
+        value: Int
+    ) {
+        viewModelScope.launch {
+            settings.edit { preferences ->
+                preferences[preferenceKey] = value
+            }
+            Log.d("myLogs", "updated value $preferenceKey")
+        }
     }
 
     companion object {

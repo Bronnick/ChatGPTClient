@@ -30,6 +30,17 @@ enum class Role{
     BOT
 }
 
+val colors = listOf(
+    "LightYellow" to LightYellow,
+    "LightGreen" to LightGreen,
+    "LightPink" to LightPink,
+    "LightBlue" to LightBlue,
+    "Red" to Color.Red,
+    "LightGray" to Color.LightGray,
+    "Green" to Color.Green,
+    "Black" to Color.Black
+)
+
 @Composable
 fun SettingsScreen(
     viewModel: ChatViewModel
@@ -64,16 +75,6 @@ fun MessageColorSelector(
     viewModel: ChatViewModel,
     role: Role
 ){
-    val colors = listOf(
-        "LightYellow" to LightYellow,
-        "LightGreen" to LightGreen,
-        "LightPink" to LightPink,
-        "LightBlue" to LightBlue,
-        "Red" to Color.Red,
-        "LightGray" to Color.LightGray,
-        "Green" to Color.Green,
-        "Black" to Color.Black
-    )
 
     val (selectedColor, onColorSelected) = remember {
         mutableStateOf(
@@ -123,9 +124,9 @@ fun MessageColorSelector(
                             onColorSelected(color)
 
                             if(role == Role.USER)
-                                viewModel.setUserMessageColor(color)
+                                viewModel.setUserMessageColor(colors.indexOf(Pair(colorName,color)))
 
-                            else viewModel.setBotMessageColor(color)
+                            else viewModel.setBotMessageColor(colors.indexOf(Pair(colorName,color)))
                         }
                     )
                     Text(text = colorName)

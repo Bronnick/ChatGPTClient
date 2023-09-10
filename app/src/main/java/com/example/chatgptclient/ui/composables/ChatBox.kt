@@ -85,7 +85,7 @@ fun ChatBox(
                             }
 
                             if(item.conversationName ==
-                                    viewModel.currentConversationName
+                                viewModel.currentConversationName
                             ) {
                                 Text(
                                     modifier = Modifier
