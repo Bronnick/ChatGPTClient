@@ -87,21 +87,8 @@ class ChatViewModel(
         }
 
         viewModelScope.launch {
-            currentUserMessageColor = colors.get(
-                settings.data
-                    .map {preferences ->
-                        preferences[currentUserColorParam] ?: 0
-                    }
-                    .first {value -> value > 0}
-            ).second
-
-            currentBotMessageColor = colors.get(
-                settings.data
-                    .map {preferences ->
-                        preferences[currentBotColorParam] ?: -1
-                    }
-                    .first {value -> value > -1}
-            ).second
+            currentUserMessageColor = colors[getParameterByKey(currentUserColorParam)].second
+            currentBotMessageColor = colors[getParameterByKey(currentBotColorParam)].second
         }
     }
 
@@ -112,9 +99,9 @@ class ChatViewModel(
     ) {
         if(isResponseBeingConstructed) return
 
+        isResponseBeingConstructed = true
         responseWrittenToConversation = currentConversationName
         viewModelScope.launch {
-            isResponseBeingConstructed = true
 
             val chatUserItem = ChatItem(
                 id = 0,
@@ -134,16 +121,14 @@ class ChatViewModel(
 
             val source = botMessageRepository.getChatRecentMessage(query)
 
-            try {
-                source.collect { chatCompletionChunk ->
-                    currentBotResponseText +=
-                        chatCompletionChunk.choices.get(0).delta?.content ?: ""
 
-                 //   Log.d("myLogs", chatCompletionChunk.choices.get(0).delta?.content.toString())
-                }
-            } catch (e: Exception) {
-                Log.d("myLogs", e.message ?: "")
+            source.collect { chatCompletionChunk ->
+                currentBotResponseText +=
+                    chatCompletionChunk.choices.get(0).delta?.content ?: ""
+
+                //   Log.d("myLogs", chatCompletionChunk.choices.get(0).delta?.content.toString())
             }
+
 
             val chatBotItem = ChatItem(
                 id = 0,
@@ -188,18 +173,14 @@ class ChatViewModel(
     fun getChatHistory(conversationName: String){
         currentConversationName = conversationName
         botResponseHistory.clear()
-        Log.d("myLogs", "getting chat history")
 
         viewModelScope.launch {
-            Log.d("myLogs", "launched coroutine getting history")
             withContext(Dispatchers.IO) {
                 for (item in botMessageRepository.getChatHistory(conversationName)) {
                     if(item.text.isNotEmpty()) {
                         botResponseHistory.add(item)
                     }
                 }
-
-                    Log.d("myLogs", "ended getting history")
             }
 
             currentUserText = "s"
@@ -216,9 +197,6 @@ class ChatViewModel(
                 for (item in botMessageRepository.getConversationNames()) {
                     conversationNames.add(item)
                 }
-            }
-            if(!conversationNames.contains("default")){
-                //conversationNames.add("default")
             }
         }
     }
@@ -259,10 +237,16 @@ class ChatViewModel(
         }
     }
 
+    private suspend fun getParameterByKey(
+        key: Preferences.Key<Int>
+    ) = settings.data.map {preferences ->
+            preferences[key] ?: -1
+        }
+        .first {value -> value > -1}
+
     companion object {
         val Factory = viewModelFactory{
             initializer {
-                Log.d("myLogs", "viewmodel creation")
                 val botMessageRepository = appContainer.botMessageRepository
                 ChatViewModel(botMessageRepository)
             }
