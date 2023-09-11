@@ -38,7 +38,7 @@ val colors = listOf(
     "Red" to Color.Red,
     "LightGray" to Color.LightGray,
     "Green" to Color.Green,
-    "Black" to Color.Black
+    "White" to Color.White
 )
 
 @Composable

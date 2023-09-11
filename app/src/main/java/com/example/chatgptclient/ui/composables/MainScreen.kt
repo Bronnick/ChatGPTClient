@@ -138,18 +138,8 @@ fun MainScreen(
                     modifier = Modifier,
                     viewModel = chatViewModel,
                     onClickSendRequestButton = { value ->
-
-                        if(chatViewModel.currentUserText.isNotEmpty()) {
-                            chatViewModel.constructBotResponse(value)
-                            keyboardController?.hide()
-                        } else{
-                            scope.launch {
-                                scaffoldState.snackbarHostState.showSnackbar(
-                                    message = "Your request is empty.",
-                                    duration = SnackbarDuration.Short
-                                )
-                            }
-                        }
+                        chatViewModel.constructBotResponse(value)
+                        keyboardController?.hide()
 
                         chatViewModel.setUserText("")
                     }

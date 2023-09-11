@@ -1,6 +1,7 @@
 package com.example.chatgptclient.data
 
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.material.SnackbarHostState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.*
@@ -22,6 +23,7 @@ import kotlinx.coroutines.withContext
 import java.time.LocalDateTime
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
+import com.example.chatgptclient.App.Companion.appContext
 import com.example.chatgptclient.App.Companion.settings
 import com.example.chatgptclient.currentBotColorParam
 import com.example.chatgptclient.currentUserColorParam
@@ -71,7 +73,6 @@ class ChatViewModel(
     var snackbarHostState by mutableStateOf(SnackbarHostState())
 
     init {
-        Log.d("myLogs", "viewmodel initializer block")
 
         //constructBotResponse("Who are you?")
         chatItemDao = App.appDatabase.getChatItemDao()
@@ -97,7 +98,14 @@ class ChatViewModel(
     fun constructBotResponse(
         query: String
     ) {
-        if(isResponseBeingConstructed) return
+        if(isResponseBeingConstructed){
+            showToast("Bot hasn't finished answering your previous message yet")
+            return
+        }
+        if(query.isEmpty()){
+            showToast("Your message is empty")
+            return
+        }
 
         isResponseBeingConstructed = true
         responseWrittenToConversation = currentConversationName
@@ -151,9 +159,13 @@ class ChatViewModel(
         }
     }
 
-    fun addConversation(conversationName: String){
-        if(conversationNames.contains(conversationName))
+    fun addConversation(
+        conversationName: String
+    ){
+        if(conversationNames.contains(conversationName)) {
+            showToast("Conversation with such name already exists")
             return
+        }
 
         conversationNames.add(conversationName)
         conversationNames = conversationNames
@@ -243,6 +255,14 @@ class ChatViewModel(
             preferences[key] ?: -1
         }
         .first {value -> value > -1}
+
+    private fun showToast(
+        text: String
+    ) = Toast.makeText(
+            appContext,
+            text,
+            Toast.LENGTH_SHORT
+        ).show()
 
     companion object {
         val Factory = viewModelFactory{

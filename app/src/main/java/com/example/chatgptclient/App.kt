@@ -22,10 +22,14 @@ class App : Application() {
             .databaseBuilder(this, AppDatabase::class.java, "database")
             .build()
 
+        appContext = this
         settings = applicationContext.dataStore
     }
 
     companion object{
+
+        lateinit var appContext: Context
+            private set
 
         lateinit var appDatabase: AppDatabase
             private set
