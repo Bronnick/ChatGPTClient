@@ -31,8 +31,10 @@ import com.example.chatgptclient.ui.composables.colors
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
-fun LocalDateTime.getHourAndMinute() =
-    this.toString().substringAfter("T").take(5)
+val LocalDateTime.hourAndMinute
+    get() = "${this.dayOfMonth} " +
+            "${this.month.toString().take(3)}, " +
+            "${this.hour}:${this.minute}"
 
 class ChatViewModel(
     private val botMessageRepository: BotMessageRepository
@@ -114,7 +116,7 @@ class ChatViewModel(
             val chatUserItem = ChatItem(
                 id = 0,
                 text = query,
-                time = LocalDateTime.now().getHourAndMinute(),
+                time = LocalDateTime.now().hourAndMinute,
                 role = "user",
                 conversationName = responseWrittenToConversation
             )
@@ -141,7 +143,7 @@ class ChatViewModel(
             val chatBotItem = ChatItem(
                 id = 0,
                 text = currentBotResponseText,
-                time = LocalDateTime.now().getHourAndMinute(),
+                time = LocalDateTime.now().hourAndMinute,
                 role = "chat",
                 conversationName = responseWrittenToConversation
             )
